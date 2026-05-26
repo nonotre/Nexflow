@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   TrendingUp,
   ClipboardCheck,
+  Users,
   LogOut,
 } from 'lucide-react'
 import {
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
 
 const MANAGER_NAV_ITEMS = [
   { href: '/evaluation#admin', label: 'Avaliação', icon: ClipboardCheck },
+  { href: '/team#admin', label: 'Equipe', icon: Users },
 ]
 
 const MOCK_USER = {
