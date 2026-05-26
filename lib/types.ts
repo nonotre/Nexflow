@@ -2,6 +2,12 @@ export type CapacityStatus = 'available' | 'busy' | 'overloaded'
 export type Seniority = 'junior' | 'pleno' | 'senior' | 'lead'
 export type Priority = 'high' | 'medium' | 'low'
 export type KanbanColumn = 'backlog' | 'in_progress' | 'in_review' | 'done'
+export type NotificationType =
+  | 'evaluation_pending'
+  | 'score_milestone'
+  | 'badge_unlocked'
+  | 'card_moved'
+  | 'team_alert'
 
 export interface User {
   id: string
@@ -40,4 +46,26 @@ export interface TeamMember extends User {
 export interface MockData<T> {
   data: T
   updatedAt: string
+}
+
+export interface AppNotification {
+  id: string
+  type: NotificationType
+  title: string
+  description: string
+  read: boolean
+  createdAt: Date
+  href?: string
+}
+
+export interface Achievement {
+  id: string
+  name: string
+  description: string
+  icon: string // emoji
+  category: 'delivery' | 'score' | 'consistency' | 'special'
+  unlockedAt?: Date // undefined = locked
+  progress?: number // current progress (for partial badges)
+  progressMax?: number // total needed (for partial badges)
+  unlockCriteria: string // human-readable criterion shown when locked
 }

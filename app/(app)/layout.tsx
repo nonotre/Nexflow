@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { ChatPanelProvider } from '@/components/layout/chat-panel-provider'
+import { NotificationProvider } from '@/components/layout/notification-provider'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { AppTopbar } from '@/components/layout/app-topbar'
 import { AiChatPanel } from '@/components/layout/ai-chat-panel'
@@ -31,18 +32,20 @@ function TopbarSkeleton() {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <ChatPanelProvider>
-      <SidebarProvider>
-        <Suspense fallback={<SidebarSkeleton />}>
-          <AppSidebar />
-        </Suspense>
-        <SidebarInset>
-          <Suspense fallback={<TopbarSkeleton />}>
-            <AppTopbar />
+      <NotificationProvider>
+        <SidebarProvider>
+          <Suspense fallback={<SidebarSkeleton />}>
+            <AppSidebar />
           </Suspense>
-          <main className="flex-1 p-6">{children}</main>
-        </SidebarInset>
-        <AiChatPanel />
-      </SidebarProvider>
+          <SidebarInset>
+            <Suspense fallback={<TopbarSkeleton />}>
+              <AppTopbar />
+            </Suspense>
+            <main className="flex-1 p-6">{children}</main>
+          </SidebarInset>
+          <AiChatPanel />
+        </SidebarProvider>
+      </NotificationProvider>
     </ChatPanelProvider>
   )
 }
