@@ -302,6 +302,71 @@ export default function EvaluationPage() {
 
 ---
 
+## Fase 3 — Kanban Board + Visão de Equipe (Extra)
+
+> Além do escopo MVP original. Implementa o Kanban completo e a página de equipe para gestores.
+
+**Kanban (`/projects/[id]`):**
+- Board com colunas: Backlog, Em Progresso, Em Revisão, Concluído
+- Cards movíveis entre colunas (estado client-side)
+- Botão "Avaliar" para gestores redireciona para `/evaluation#admin`
+
+**Equipe (`/team`, apenas gestor):**
+- Grid de cards de colaboradores com score, capacidade e senioridade
+- Filtros por senioridade e status de capacidade
+
+---
+
+## Fase 4 — Notificações e Sistema de Badges
+
+> Adiciona alertas in-app e um sistema de conquistas para aumentar o engajamento.
+
+### 4.1 — Notificações In-App
+
+**Sino na Topbar** (`NotificationBell`):
+- Ícone `Bell` com badge vermelho de contagem de não lidas
+- Clicar abre `Popover` com lista de notificações ordenadas por data
+- Timestamp relativo: "há 8 min", "há 2h", "há 3 dias"
+- Clicar numa notificação → marca como lida + navega para `href` relevante
+- Botão "Marcar todas como lidas" → badge desaparece
+
+**Tipos de notificação (role-aware):**
+
+| Tipo | Role | Exemplo |
+|------|------|---------|
+| `evaluation_pending` | Gestor | "Card 'API de Pagamentos' aguarda avaliação" |
+| `team_alert` | Gestor | "Ana Silva está sobrecarregada" |
+| `score_milestone` | Colaborador | "🎉 Você ultrapassou 1.000 pontos!" |
+| `badge_unlocked` | Colaborador | "🚀 Entregador Veloz desbloqueado" |
+| `card_moved` | Colaborador | "Card movido para Em Revisão" |
+
+**Estado:** Gerenciado via `NotificationProvider` (React Context) — em memória, reseta ao recarregar.
+
+**Arquivos:**
+- `lib/mock/notifications.ts` — dados por role
+- `components/layout/notification-provider.tsx` — Context com markAsRead/markAllAsRead
+- `components/layout/notification-bell.tsx` — Botão + Popover
+
+### 4.2 — Sistema de Conquistas (Colaborador)
+
+**Rota:** `/achievements` (guard: gestor é redirecionado para `/dashboard`)
+
+**Funcionalidades:**
+- Stat chips: Conquistadas X/Y, Recentes (7 dias), Bloqueadas
+- Seção "Recentes" com conquistas dos últimos 7 dias
+- Grid por categoria (Entrega, Score, Consistência, Especial)
+- Badge desbloqueada: colorida, data de conquista
+- Badge bloqueada: dessaturada, critério de desbloqueio + progress bar (quando parcial)
+
+**Arquivos:**
+- `lib/mock/achievements.ts` — 10 badges com estados variados
+- `components/achievements/achievement-card.tsx` — Card locked/unlocked
+- `app/(app)/achievements/page.tsx` — Página de conquistas
+
+> **Decisão:** Sem link na sidebar — conquistas acessíveis via notificações (`href: '/achievements'`).
+
+---
+
 ## Open Questions
 
 > **Q1 — Sidebar do shadcn:** O template `base-luma` já inclui o componente `Sidebar`? Preciso confirmar se ele já está instalado ou se precisa ser adicionado via `npx shadcn add sidebar`.
@@ -323,3 +388,5 @@ export default function EvaluationPage() {
 | 1.2 | Barra de score e lista de entregas renderizam com dados mock |
 | 1.3 | Formulário lista cards, checkboxes funcionam, toast de sucesso aparece, acesso sem `#admin` redireciona com toast |
 | 2 | Chat abre, sugestões rápidas disparam respostas com delay |
+| 3 | Kanban renderiza colunas, cards movem entre colunas, página de equipe filtra colaboradores |
+| 4 | Sino mostra badge de não lidas, popover lista notificações por role, marcar lida funciona, `/achievements` renderiza grid, gestor é redirecionado |
