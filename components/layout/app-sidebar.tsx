@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard,
+  FolderKanban,
   TrendingUp,
   ClipboardCheck,
   Users,
+  Trophy,
   LogOut,
 } from 'lucide-react'
 import {
@@ -26,8 +27,12 @@ import { Badge } from '@/components/ui/badge'
 import { useRole } from '@/hooks/use-role'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/projects', label: 'Projetos', icon: FolderKanban },
   { href: '/performance', label: 'Performance', icon: TrendingUp },
+]
+
+const COLLABORATOR_NAV_ITEMS = [
+  { href: '/achievements', label: 'Conquistas', icon: Trophy },
 ]
 
 const MANAGER_NAV_ITEMS = [
@@ -74,6 +79,18 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {role === 'collaborator' &&
+                COLLABORATOR_NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      isActive={isActive(href)}
+                      render={<Link href={href} />}
+                    >
+                      <Icon className="size-4" />
+                      <span>{label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               {role === 'manager' &&
                 MANAGER_NAV_ITEMS.map(({ href, label, icon: Icon }) => (
                   <SidebarMenuItem key={href}>

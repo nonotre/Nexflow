@@ -108,7 +108,7 @@ export const MANAGER_NOTIFICATIONS: AppNotification[] = [
     description: 'A média de score da equipe caiu 12% esta semana.',
     read: true,
     createdAt: daysAgo(1),
-    href: '/dashboard#admin',
+    href: '/projects#admin',
   },
   {
     id: 'mn-5',

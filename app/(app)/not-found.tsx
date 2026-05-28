@@ -14,8 +14,8 @@ export default function NotFound() {
           A rota que você acessou não existe.
         </p>
       </div>
-      <Button size="sm" render={<Link href="/dashboard" />}>
-        Voltar ao Dashboard
+      <Button size="sm" render={<Link href="/projects" />}>
+        Voltar aos Projetos
       </Button>
     </div>
   )

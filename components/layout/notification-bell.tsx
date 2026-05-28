@@ -135,7 +135,7 @@ export function NotificationBell() {
         <Bell className="size-4" />
         {unreadCount > 0 && (
           <span
-            className="absolute -right-0.5 -top-0.5 flex h-4 w-4 animate-pulse items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground"
+            className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white"
             aria-hidden
           >
             {unreadCount > 9 ? '9+' : unreadCount}

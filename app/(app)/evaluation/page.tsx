@@ -13,7 +13,7 @@ export default function EvaluationPage() {
   useEffect(() => {
     if (role === 'collaborator') {
       toast.error('Acesso restrito — esta área é exclusiva para gestores.')
-      router.replace('/dashboard')
+      router.replace('/projects')
     }
   }, [role, router])
 

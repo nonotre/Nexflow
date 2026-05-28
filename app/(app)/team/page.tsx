@@ -34,13 +34,11 @@ export default function TeamPage() {
       toast.error('Acesso restrito', {
         description: 'Esta área é exclusiva para gestores.',
       })
-      router.replace('/dashboard')
+      router.replace('/projects')
     }
   }, [role, router])
 
-  // Avoid flash of content for non-managers
-  if (role !== 'manager') return null
-
+  // Must be before any early return to comply with Rules of Hooks
   const filtered = useMemo(
     () =>
       MOCK_TEAM.filter((m) => {
@@ -50,6 +48,9 @@ export default function TeamPage() {
       }),
     [seniority, capacity],
   )
+
+  // Avoid flash of content for non-managers
+  if (role !== 'manager') return null
 
   return (
     <div className="flex flex-col gap-6">

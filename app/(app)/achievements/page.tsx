@@ -74,7 +74,7 @@ export default function AchievementsPage() {
       toast.error('Acesso restrito', {
         description: 'Conquistas são exclusivas para colaboradores.',
       })
-      router.replace('/dashboard')
+      router.replace('/projects')
     }
   }, [role, router])
 

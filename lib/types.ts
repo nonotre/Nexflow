@@ -35,6 +35,8 @@ export interface KanbanCard {
   priority: Priority
   points: number
   column: KanbanColumn
+  description?: string
+  dueDate?: string // ISO date string, e.g. "2025-06-30"
 }
 
 export interface TeamMember extends User {
