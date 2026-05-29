@@ -33,7 +33,7 @@ export default function ProjectsListPage() {
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
         {MOCK_PROJECTS.map((project) => (
           <ProjectCard key={project.id} project={project} role={role} />
         ))}

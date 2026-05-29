@@ -4,7 +4,7 @@ import { Role } from '@/hooks/use-role'
 // Quick-suggestion chips shown below the input area — role-aware
 // ---------------------------------------------------------------------------
 
-export const QUICK_SUGGESTIONS: Record<Role, string[]> = {
+export const QUICK_SUGGESTIONS: Record<'manager' | 'collaborator', string[]> = {
   collaborator: [
     'Como melhorar meu score?',
     'Qual card fazer primeiro?',

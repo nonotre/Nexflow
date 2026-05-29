@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { CalendarDays, MessageSquare, Plus, Star, X, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { KanbanCard as KanbanCardType, Priority } from '@/lib/types'
+import type { KanbanCard as KanbanCardType, Priority, KanbanColumn as KanbanColumnType } from '@/lib/types'
 import type { Role } from '@/hooks/use-role'
 import { getCommentsByCard, type CardComment } from '@/lib/mock/kanban'
 
@@ -53,7 +53,7 @@ interface KanbanCardProps {
   card: KanbanCardType
   projectColor: string
   role: Role
-  onMove: (cardId: string, newColumn: string) => void
+  onMove: (cardId: string, newColumn: KanbanColumnType) => void
   onEvaluate: (card: KanbanCardType) => void
   onDragStart?: (cardId: string) => void
   onDragEnd?: () => void

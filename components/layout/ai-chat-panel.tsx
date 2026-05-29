@@ -240,6 +240,11 @@ export function AiChatPanel() {
 
   const hasMessages = messages.length > 0
 
+  // Defer rendering until role is resolved on the client (avoids hydration mismatch)
+  if (!role) return null
+
+  const resolvedRole = role
+
   return (
     <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetContent
@@ -260,7 +265,7 @@ export function AiChatPanel() {
 
           <div className="flex items-center gap-1">
             <Badge variant="secondary" className="h-5 text-[10px] px-1.5">
-              {role === 'manager' ? 'Gestor' : 'Colaborador'}
+              {resolvedRole === 'manager' ? 'Gestor' : 'Colaborador'}
             </Badge>
             {hasMessages && (
               <Button
@@ -291,7 +296,7 @@ export function AiChatPanel() {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto overscroll-contain">
             {!hasMessages ? (
-              <WelcomeScreen role={role} onSuggestionClick={sendMessage} />
+              <WelcomeScreen role={resolvedRole} onSuggestionClick={sendMessage} />
             ) : (
               <div className="flex flex-col gap-3 px-4 py-4">
                 {messages.map((msg) => (
@@ -310,7 +315,7 @@ export function AiChatPanel() {
                 Sugestões rápidas
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {QUICK_SUGGESTIONS[role].map((suggestion) => (
+                {QUICK_SUGGESTIONS[resolvedRole].map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => sendMessage(suggestion)}
