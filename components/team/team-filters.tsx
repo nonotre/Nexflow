@@ -113,9 +113,6 @@ export function TeamFilters({
             active={capacity === opt.value}
             onClick={() => onCapacityChange(opt.value)}
           >
-            {opt.dot && (
-              <span className={`h-2 w-2 rounded-full ${opt.dot}`} />
-            )}
             {opt.label}
           </Chip>
         ))}
