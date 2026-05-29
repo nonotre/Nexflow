@@ -55,7 +55,7 @@ interface KanbanCardProps {
   role: Role
   onMove: (cardId: string, newColumn: KanbanColumnType) => void
   onEvaluate: (card: KanbanCardType) => void
-  onDragStart?: (cardId: string) => void
+  onDragStart?: (cardId: string, height: number) => void
   onDragEnd?: () => void
 }
 
@@ -319,7 +319,7 @@ export function KanbanCard({
     // Ghost image offset
     const el = e.currentTarget as HTMLElement
     e.dataTransfer.setDragImage(el, el.offsetWidth / 2, 20)
-    onDragStart?.(card.id)
+    onDragStart?.(card.id, el.offsetHeight)
   }
 
   function handleDragEnd() {

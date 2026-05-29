@@ -49,6 +49,7 @@ export function KanbanBoard({
   const role = useRole()
   const [cards, setCards] = useState<KanbanCard[]>(initialCards)
   const [draggingCardId, setDraggingCardId] = useState<string | null>(null)
+  const [draggingCardHeight, setDraggingCardHeight] = useState<number | null>(null)
 
   // Derive unique team members from cards
   const members = useMemo(() => {
@@ -88,13 +89,34 @@ export function KanbanBoard({
     })
   }, [])
 
+  // Add a new card to a column
+  const handleAddCard = useCallback(
+    (column: KanbanColumnType, title: string) => {
+      const newCard: KanbanCard = {
+        id: `k-local-${Date.now()}`,
+        projectId: 'local',
+        title,
+        assignee: '?',
+        assigneeName: 'Sem responsável',
+        priority: 'medium',
+        points: 0,
+        column,
+      }
+      setCards((prev) => [...prev, newCard])
+      toast.success('Card criado com sucesso', { duration: 2000 })
+    },
+    [],
+  )
+
   // Drag state handlers
-  const handleDragStart = useCallback((cardId: string) => {
+  const handleDragStart = useCallback((cardId: string, height: number) => {
     setDraggingCardId(cardId)
+    setDraggingCardHeight(height)
   }, [])
 
   const handleDragEnd = useCallback(() => {
     setDraggingCardId(null)
+    setDraggingCardHeight(null)
   }, [])
 
   // Group cards by column
@@ -154,7 +176,11 @@ export function KanbanBoard({
             role={role}
             onMove={handleMove}
             onEvaluate={handleEvaluate}
+            onAddCard={handleAddCard}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
             draggingCardId={draggingCardId}
+            draggingCardHeight={draggingCardHeight}
           />
         ))}
       </div>

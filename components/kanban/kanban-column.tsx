@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { Plus, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { KanbanCard } from '@/components/kanban/kanban-card'
 import type { KanbanCard as KanbanCardType, KanbanColumn as KanbanColumnType } from '@/lib/types'
@@ -29,7 +30,11 @@ interface KanbanColumnProps {
   role: Role
   onMove: (cardId: string, newColumn: KanbanColumnType) => void
   onEvaluate: (card: KanbanCardType) => void
+  onAddCard: (column: KanbanColumnType, title: string) => void
+  onDragStart: (cardId: string, height: number) => void
+  onDragEnd: () => void
   draggingCardId?: string | null
+  draggingCardHeight?: number | null
 }
 
 // ---------------------------------------------------------------------------
@@ -43,9 +48,17 @@ export function KanbanColumn({
   role,
   onMove,
   onEvaluate,
+  onAddCard,
+  onDragStart,
+  onDragEnd,
   draggingCardId,
+  draggingCardHeight,
 }: KanbanColumnProps) {
   const [isOver, setIsOver] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
   const accent = COLUMN_ACCENT[column]
   const label = COLUMN_LABELS[column]
 
@@ -53,6 +66,13 @@ export function KanbanColumn({
   const isDraggingFromHere = draggingCardId
     ? cards.some((c) => c.id === draggingCardId)
     : false
+
+  // Auto-focus textarea when add form opens
+  useEffect(() => {
+    if (isAdding) {
+      textareaRef.current?.focus()
+    }
+  }, [isAdding])
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault()
@@ -73,6 +93,29 @@ export function KanbanColumn({
     const cardId = e.dataTransfer.getData('text/plain')
     if (cardId && !isDraggingFromHere) {
       onMove(cardId, column)
+    }
+  }
+
+  function handleConfirm() {
+    const title = newTitle.trim()
+    if (!title) return
+    onAddCard(column, title)
+    setNewTitle('')
+    setIsAdding(false)
+  }
+
+  function handleCancel() {
+    setNewTitle('')
+    setIsAdding(false)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleConfirm()
+    }
+    if (e.key === 'Escape') {
+      handleCancel()
     }
   }
 
@@ -100,10 +143,10 @@ export function KanbanColumn({
       </div>
 
       {/* Cards */}
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2 pb-3">
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
         {cards.length === 0 ? (
           <div
-          className={[
+            className={[
               'flex flex-1 items-center justify-center py-8 text-center rounded-lg border-2 border-dashed transition-colors',
               isOver && !isDraggingFromHere
                 ? 'border-zinc-500/40 bg-zinc-500/5'
@@ -122,12 +165,57 @@ export function KanbanColumn({
                 role={role}
                 onMove={onMove}
                 onEvaluate={onEvaluate}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
               />
             ))}
             {isOver && !isDraggingFromHere && (
-              <div className="rounded-xl border-2 border-dashed border-zinc-500/40 bg-zinc-500/5 py-3" />
+              <div
+                className="rounded-xl border-2 border-dashed border-zinc-500/40 bg-zinc-500/5 shrink-0"
+                style={{ height: draggingCardHeight ? `${draggingCardHeight}px` : '72px' }}
+              />
             )}
           </>
+        )}
+      </div>
+
+      {/* Add card footer */}
+      <div className="p-2 pt-0">
+        {isAdding ? (
+          <div className="rounded-xl border border-primary/30 bg-card shadow-sm p-2.5 flex flex-col gap-2">
+            <textarea
+              ref={textareaRef}
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Título do card…"
+              rows={2}
+              className="w-full resize-none rounded-lg bg-transparent px-1 py-0.5 text-sm leading-snug text-foreground placeholder:text-muted-foreground/40 focus:outline-none"
+            />
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleConfirm}
+                disabled={!newTitle.trim()}
+                className="flex-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+              >
+                Adicionar card
+              </button>
+              <button
+                onClick={handleCancel}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-muted-foreground/60 transition-colors hover:bg-accent hover:text-muted-foreground"
+          >
+            <Plus className="size-3.5" />
+            Adicionar card
+          </button>
         )}
       </div>
     </div>
