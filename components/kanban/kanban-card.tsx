@@ -1,12 +1,20 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { CalendarDays, MessageSquare, Plus, Star, X, Send } from 'lucide-react'
+import { CalendarDays, Flag, MessageSquare, Plus, Star, X, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import type { KanbanCard as KanbanCardType, Priority, KanbanColumn as KanbanColumnType } from '@/lib/types'
 import type { Role } from '@/hooks/use-role'
 import { getCommentsByCard, type CardComment } from '@/lib/mock/kanban'
+import { format, parseISO } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 // ---------------------------------------------------------------------------
 // Priority config
@@ -63,6 +71,12 @@ interface KanbanCardProps {
 // Card Detail Modal
 // ---------------------------------------------------------------------------
 
+const PRIORITY_DOT: Record<Priority, string> = {
+  high: 'bg-red-500',
+  medium: 'bg-amber-500',
+  low: 'bg-blue-500',
+}
+
 function CardDetailModal({
   card,
   projectColor,
@@ -72,7 +86,9 @@ function CardDetailModal({
   projectColor: string
   onClose: () => void
 }) {
-  const priority = PRIORITY_CONFIG[card.priority]
+  const [priority, setPriority] = useState<Priority>(card.priority)
+  const [dueDate, setDueDate] = useState<string | undefined>(card.dueDate)
+  const priorityCfg = PRIORITY_CONFIG[priority]
   const comments = getCommentsByCard(card.id)
   const [newComment, setNewComment] = useState('')
   const [localComments, setLocalComments] = useState<CardComment[]>(comments)
@@ -124,18 +140,44 @@ function CardDetailModal({
           {/* Meta row — stacked label/value chips */}
           <div className="flex items-stretch gap-0 border-b border-border bg-muted/30">
 
-            {/* Due date */}
-            {card.dueDate && (
-              <div className="flex flex-col items-start gap-0.5 px-5 py-3">
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
-                  Entrega
-                </span>
-                <span className="flex items-center gap-1 text-xs font-medium text-foreground">
+            {/* Due date — editable */}
+            <div className="flex flex-col items-start gap-0.5 px-5 py-3">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+                Entrega
+              </span>
+              <Popover>
+                <PopoverTrigger className="flex items-center gap-1 text-xs font-medium text-foreground cursor-pointer rounded hover:underline hover:text-primary transition-colors">
                   <CalendarDays className="size-3 text-muted-foreground/60" />
-                  {formatDate(card.dueDate)}
-                </span>
-              </div>
-            )}
+                  {dueDate
+                    ? format(parseISO(dueDate), "d 'de' MMM, yyyy", { locale: ptBR })
+                    : <span className="text-muted-foreground/50 italic">Definir prazo</span>
+                  }
+                </PopoverTrigger>
+                <PopoverContent className="w-auto !p-0 !rounded-2xl overflow-hidden" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dueDate ? parseISO(dueDate) : undefined}
+                    onSelect={(day) =>
+                      setDueDate(day ? format(day, 'yyyy-MM-dd') : undefined)
+                    }
+                    locale={ptBR}
+                    initialFocus
+                  />
+                  {dueDate && (
+                    <div className="border-t px-3 pb-3 pt-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-xs text-muted-foreground"
+                        onClick={() => setDueDate(undefined)}
+                      >
+                        Remover prazo
+                      </Button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+            </div>
 
             {/* Points */}
             <div className="flex flex-col items-start gap-0.5 px-5 py-3">
@@ -148,17 +190,44 @@ function CardDetailModal({
               </span>
             </div>
 
-            {/* Priority */}
+            {/* Priority — editable */}
             <div className="flex flex-col items-start gap-1 px-5 py-3">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
                 Prioridade
               </span>
-              <Badge
-                variant="outline"
-                className={`h-5 px-2 text-[10px] font-semibold ${priority.className}`}
-              >
-                {priority.label}
-              </Badge>
+              <Popover>
+                <PopoverTrigger>
+                  <Badge
+                    variant="outline"
+                    className={`h-5 px-2 text-[10px] font-semibold gap-1 cursor-pointer hover:opacity-80 transition-opacity ${priorityCfg.className}`}
+                  >
+                    <span className={`size-1.5 rounded-full ${PRIORITY_DOT[priority]}`} />
+                    {priorityCfg.label}
+                  </Badge>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 !p-1.5 !rounded-xl !gap-0" align="start">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 pt-1 pb-1.5">
+                    Prioridade
+                  </p>
+                  {(['high', 'medium', 'low'] as Priority[]).map((p) => {
+                    const cfg = PRIORITY_CONFIG[p]
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => setPriority(p)}
+                        className={`w-full flex items-center gap-2 text-xs px-2 py-1.5 rounded-lg transition-colors ${
+                          priority === p
+                            ? cfg.className
+                            : 'hover:bg-muted text-foreground'
+                        }`}
+                      >
+                        <span className={`size-2 rounded-full ${PRIORITY_DOT[p]}`} />
+                        {cfg.label}
+                      </button>
+                    )
+                  })}
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Assignee — avatar only, name on hover */}

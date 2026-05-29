@@ -24,6 +24,8 @@ export interface Project {
   teamSize: number
   assignedCards: number
   color: string
+  priority?: Priority
+  dueDate?: string // ISO date string, e.g. "2025-06-30"
 }
 
 export interface KanbanCard {
