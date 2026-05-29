@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Bot, Send, X, Sparkles, RotateCcw } from 'lucide-react'
+import { Send, X, Sparkles, RotateCcw } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+
 import { useChatPanel } from '@/components/layout/chat-panel-provider'
 import { useRole } from '@/hooks/use-role'
 import { QUICK_SUGGESTIONS, getAiResponse } from '@/lib/mock/ai-responses'
@@ -29,7 +29,7 @@ function TypingIndicator() {
   return (
     <div className="flex items-end gap-2">
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Bot className="size-3.5" />
+        <Sparkles className="size-3.5" />
       </div>
       <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm bg-muted px-4 py-3">
         <span
@@ -61,7 +61,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
       {/* Avatar */}
       {!isUser && (
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Bot className="size-3.5" />
+          <Sparkles className="size-3.5" />
         </div>
       )}
 
@@ -102,25 +102,10 @@ function WelcomeScreen({ role, onSuggestionClick }: WelcomeScreenProps) {
   const suggestions = QUICK_SUGGESTIONS[role]
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-8 text-center">
-      {/* Icon */}
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm">
-        <Sparkles className="size-7" />
-      </div>
-
-      {/* Greeting */}
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-foreground">Nexflow Copilot</p>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Seu assistente de performance e gestão.
-          <br />
-          Como posso te ajudar hoje?
-        </p>
-      </div>
-
+    <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-8">
       {/* Quick suggestions */}
       <div className="flex w-full flex-col gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+        <p className="mb-1 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
           Sugestões
         </p>
         {suggestions.map((suggestion) => (
@@ -255,7 +240,7 @@ export function AiChatPanel() {
         <SheetHeader className="flex-row items-center justify-between border-b px-4 py-3 space-y-0">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <Bot className="size-4" />
+              <Sparkles className="size-4" />
             </div>
             <div>
               <SheetTitle className="text-sm leading-tight">Assistente IA</SheetTitle>
@@ -264,9 +249,6 @@ export function AiChatPanel() {
           </div>
 
           <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="h-5 text-[10px] px-1.5">
-              {resolvedRole === 'manager' ? 'Gestor' : 'Colaborador'}
-            </Badge>
             {hasMessages && (
               <Button
                 variant="ghost"
@@ -294,7 +276,7 @@ export function AiChatPanel() {
 
         {/* ---- Message area ---- */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="flex flex-1 flex-col overflow-y-auto overscroll-contain">
             {!hasMessages ? (
               <WelcomeScreen role={resolvedRole} onSuggestionClick={sendMessage} />
             ) : (
