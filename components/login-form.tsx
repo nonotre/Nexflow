@@ -1,5 +1,9 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 import {
   Card,
   CardContent,
@@ -19,6 +23,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter()
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -29,7 +35,10 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={(e) => {
+            e.preventDefault()
+            router.push('/projects')
+          }}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">E-mail</FieldLabel>
@@ -93,7 +102,7 @@ export function LoginForm({
                 </div>
 
                 <FieldDescription className="text-center mt-4">
-                  Não tem uma conta? <a href="#">Cadastre-se</a>
+                  Não tem uma conta? <Link href="/signup" className="underline hover:no-underline">Cadastre-se</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

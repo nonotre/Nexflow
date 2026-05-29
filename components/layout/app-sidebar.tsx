@@ -125,12 +125,13 @@ export function AppSidebar() {
               {role === 'manager' ? 'Gestor' : 'Colaborador'}
             </Badge>
           </div>
-          <button
+          <Link
+            href="/login"
             title="Sair"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <LogOut className="size-4" />
-          </button>
+          </Link>
         </div>
       </SidebarFooter>
     </Sidebar>
